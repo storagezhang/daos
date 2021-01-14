@@ -26,16 +26,4 @@ bool dts_is_async(struct dts_context *tsc);
  */
 void dts_ctx_fini(struct dts_context *tsc);
 
-/**
- * Try to obtain a free credit from the I/O context.
- */
-struct dts_io_credit *dts_credit_take(struct dts_context *tsc);
-/**
- * Drain all the inflight I/O credits of @tsc.
- */
-int dts_credit_drain(struct dts_context *tsc);
-
-/** return an unused credit */
-void dts_credit_return(struct dts_context *tsc, struct dts_io_credit *cred);
-
 #endif /* __DTS_COMMON_H__ */
