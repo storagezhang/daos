@@ -941,8 +941,6 @@ dss_enum_unpack_io_clear(struct dss_enum_unpack_io *io)
 		if (io->ui_sgls != NULL)
 			d_sgl_fini(&io->ui_sgls[i], false);
 		daos_iov_free(&io->ui_csum_iov);
-
-
 		daos_iov_free(&io->ui_iods[i].iod_name);
 		D_FREE(io->ui_iods[i].iod_recxs);
 	}
