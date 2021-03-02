@@ -68,6 +68,13 @@ type (
 		retryer
 		unaryRPCGetter
 	}
+
+	// TextRequest is an interface to be implemented by request types that
+	// return a simple text string.
+	TextRequest interface {
+		deadliner
+		GetText() (string, error)
+	}
 )
 
 // request is an embeddable struct to provide basic functionality
