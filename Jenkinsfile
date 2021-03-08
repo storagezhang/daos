@@ -365,7 +365,7 @@ boolean skip_test_rpms_centos7() {
 
 boolean skip_scan_rpms_centos7() {
     return target_branch == 'weekly-testing' ||
-           skip_stage('scan-centos-rpms', true) ||
+           skip_stage('scan-centos-rpms') ||
            quick_functional()
 }
 
@@ -1179,12 +1179,13 @@ pipeline {
                       expression { ! skip_unit_test() }
                     }
                     agent {
-                        label 'ci_vm1'
+                        label 'stage_vm1'
                     }
                     steps {
                         unitTest timeout_time: 30,
                                  inst_repos: pr_repos(),
-                                 inst_rpms: unit_packages()
+                                 inst_rpms: unit_packages(),
+                                 target: 'el7.9_test'
                     }
                     post {
                       always {
@@ -1204,7 +1205,8 @@ pipeline {
                         unitTest timeout_time: 30,
                                  inst_repos: pr_repos(),
                                  test_script: 'ci/unit/test_nlt.sh',
-                                 inst_rpms: unit_packages()
+                                 inst_rpms: unit_packages(),
+                                 target: 'el7.9_test'
                     }
                     post {
                       always {
@@ -1322,12 +1324,13 @@ pipeline {
                         expression { ! skip_ftest('el7') }
                     }
                     agent {
-                        label 'ci_vm9'
+                        label 'stage_vm9'
                     }
                     steps {
                         functionalTest inst_repos: daos_repos(),
                                        inst_rpms: functional_packages(),
-                                       test_function: 'runTestFunctionalV2'
+                                       test_function: 'runTestFunctionalV2',
+                                       target: 'el7.9_test'
                     }
                     post {
                         always {
@@ -1341,12 +1344,13 @@ pipeline {
                         expression { ! skip_ftest('leap15') }
                     }
                     agent {
-                        label 'ci_vm9'
+                        label 'stage_vm9'
                     }
                     steps {
                         functionalTest inst_repos: daos_repos(),
                                        inst_rpms: functional_packages(),
-                                       test_function: 'runTestFunctionalV2'
+                                       test_function: 'runTestFunctionalV2',
+                                       target: 'leap15.2_test'
                     }
                     post {
                         always {
@@ -1383,7 +1387,7 @@ pipeline {
                         label 'ci_nvme3'
                     }
                     steps {
-                        functionalTest target: hw_distro_target(),
+                        functionalTest target: 'el7.9_test', // target: hw_distro_target(),
                                        inst_repos: daos_repos(),
                                        inst_rpms: functional_packages(),
                                        test_function: 'runTestFunctionalV2'
@@ -1446,7 +1450,8 @@ pipeline {
                     }
                     steps {
                         testRpm inst_repos: daos_repos(),
-                                daos_pkg_version: daos_packages_version()
+                                daos_pkg_version: daos_packages_version(),
+                                 target: 'el7.9_test'
                    }
                 } // stage('Test CentOS 7 RPMs')
                 stage('Scan CentOS 7 RPMs') {
@@ -1462,7 +1467,8 @@ pipeline {
                                  daos_pkg_version: daos_packages_version(),
                                  inst_rpms: 'clamav clamav-devel',
                                  test_script: 'ci/rpm/scan_daos.sh',
-                                 junit_files: 'maldetect.xml'
+                                 junit_files: 'maldetect.xml',
+                                 target: 'el7.9_test'
                     }
                     post {
                         always {
@@ -1505,7 +1511,7 @@ pipeline {
         } // stage ('Test Report')
     } // stages
     post {
-        always {
+         always {
             valgrindReportPublish valgrind_stashes: ['centos7-gcc-nlt-memcheck',
                                                      'centos7-gcc-unit-memcheck']
         }
